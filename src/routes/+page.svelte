@@ -55,10 +55,10 @@
                     on:click={() => {
                         if (!SlackCode) {
                             window.location.href =
-                                'https://slack.com/oauth/v2/authorize?client_id=2210535565.6498112565286&scope=&user_scope=openid,email,profile&redirect_uri=http://localhost:5173/oauth/slack';
+                                'https://slack.com/oauth/v2/authorize?client_id=2210535565.6498112565286&scope=&user_scope=openid,email,profile&redirect_uri=http://verify.onboard.hackclub.com/oauth/slack';
                         }
                     }}
-                    disabled={SlackCode}
+                    disabled={!!SlackCode}
                     title={SlackCode ? "Slack authentication complete" : ""}
                 >
                     Login to Slack
@@ -72,7 +72,7 @@
                                 'https://github.com/login/oauth/authorize?client_id=Ov23li7FU4IQ7x89NQMn';
                         }
                     }}
-                    disabled={GitHubCode}
+                    disabled={!!GitHubCode}
                     title={GitHubCode ? "GitHub authentication complete" : ""}
                 >
                     Login to GitHub
