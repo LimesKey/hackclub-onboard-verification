@@ -13,7 +13,6 @@
 		"wasm": "wasm-pack build ./wasm-lib --target web"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.2.5",
 		"@sveltejs/adapter-cloudflare": "^4.7.3",
 		"@sveltejs/kit": "^2.7.0",
 		"@sveltejs/vite-plugin-svelte": "^3.1.2",
