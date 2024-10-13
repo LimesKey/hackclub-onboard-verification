@@ -82,9 +82,9 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
                 }
             },
             Err(err) => {
-                console::error_1(&"Request error".into());
+                console::error_2(&"Request error:".into(), &err.to_string().into());
                 let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
-                Err(JsValue::from_str(&format!("Request error: {}", payload_json)))
+                Err(JsValue::from_str(&format!("Request error: {}\nError: {}", payload_json, err.to_string())))
             },
         }
     })
