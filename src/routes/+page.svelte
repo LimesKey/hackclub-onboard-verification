@@ -106,6 +106,6 @@
         </div>
     </div>
     <footer class="text-center text-white py-4">
-        <p>&copy; 2023 OAuth Verification. All rights reserved.</p>
+        <p>&copy; Made by Ryan Di Lorenzo with "jank" and "lock in".</p>
     </footer>
 </div>

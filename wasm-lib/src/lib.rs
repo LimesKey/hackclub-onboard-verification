@@ -46,46 +46,60 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
     console::log_1(&"Sending request to API".into());
 
     let client = Client::new();
-    let request = client.get("https://api.onboard.hackclub.com/api")
+    let request = client
+        .get("https://api.onboard.limeskey.com/api") // Changed to POST
         .json(&payload)
-        .send();
+        .build(); // Build the request first to catch any errors
 
-    future_to_promise(async move {
-        match request.await {
-            Ok(response) => {
-                console::log_1(&"Received response from API".into());
+    match request {
+        Ok(req) => {
+            console::log_1(&"Request built successfully".into());
+            let response = client.execute(req);
 
-                let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
-                let status = response.status();
-                let response_text = response.text().await.unwrap_or_else(|_| "Failed to read response".to_string());
+            future_to_promise(async move {
+                match response.await {
+                    Ok(response) => {
+                        console::log_1(&"Received response from API".into());
 
-                console::log_2(&"Response status:".into(), &status.as_u16().into());
-                console::log_2(&"Response text:".into(), &response_text.clone().into());
+                        let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
+                        let status = response.status();
+                        let response_text = response.text().await.unwrap_or_else(|_| "Failed to read response".to_string());
 
-                if status.is_success() {
-                    let api_response: ApiResponse = serde_json::from_str(&response_text).unwrap();
+                        console::log_2(&"Response status:".into(), &status.as_u16().into());
+                        console::log_2(&"Response text:".into(), &response_text.clone().into());
 
-                    // Generate the URL with appended parameters
-                    let mut url = Url::parse("https://forms.hackclub.com/t/9yNy4WYtrZus").unwrap();
-                    url.query_pairs_mut()
-                        .append_pair("secret", &api_response.Slack.hashed_secret)
-                        .append_pair("slack_id", &api_response.Slack.slack_id)
-                        .append_pair("eligibility", &api_response.Slack.eligibility)
-                        .append_pair("slack_user", &api_response.Slack.username)
-                        .append_pair("github_id", &api_response.GitHub.id);
+                        if status.is_success() {
+                            let api_response: ApiResponse = serde_json::from_str(&response_text).unwrap();
 
-                    console::log_1(&"Successfully generated URL".into());
-                    Ok(JsValue::from_str(&url.to_string()))
-                } else {
-                    console::error_2(&"Request failed:".into(), &response_text.clone().into());
-                    Err(JsValue::from_str(&format!("Request failed: {}\nResponse: {}", payload_json, response_text)))
+                            // Generate the URL with appended parameters
+                            let mut url = Url::parse("https://forms.hackclub.com/t/9yNy4WYtrZus").unwrap();
+                            url.query_pairs_mut()
+                                .append_pair("secret", &api_response.Slack.hashed_secret)
+                                .append_pair("slack_id", &api_response.Slack.slack_id)
+                                .append_pair("eligibility", &api_response.Slack.eligibility)
+                                .append_pair("slack_user", &api_response.Slack.username)
+                                .append_pair("github_id", &api_response.GitHub.id);
+
+                            console::log_1(&"Successfully generated URL".into());
+                            Ok(JsValue::from_str(&url.to_string()))
+                        } else {
+                            console::error_2(&"Request failed:".into(), &response_text.clone().into());
+                            Err(JsValue::from_str(&format!("Request failed: {}\nResponse: {}", payload_json, response_text)))
+                        }
+                    },
+                    Err(err) => {
+                        console::error_2(&"Request error:".into(), &err.to_string().into());
+                        let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
+                        Err(JsValue::from_str(&format!("Request error: {}\nError: {}", payload_json, err.to_string())))
+                    },
                 }
-            },
-            Err(err) => {
-                console::error_2(&"Request error:".into(), &err.to_string().into());
-                let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
-                Err(JsValue::from_str(&format!("Request error: {}\nError: {}", payload_json, err.to_string())))
-            },
+            })
+        },
+        Err(err) => {
+            console::error_2(&"Failed to build request:".into(), &err.to_string().into());
+            future_to_promise(async move {
+                Err(JsValue::from_str(&format!("Failed to build request: {}", err.to_string())))
+            })
         }
-    })
+    }
 }
