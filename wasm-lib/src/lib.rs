@@ -34,16 +34,14 @@ struct ApiResponse {
     GitHub: GitHubResponse,
 }
 
-#[wasm_bindgen]
-pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Promise {
+#[wasm_bindgen(catch)]
+pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Result<JsValue, JsValue> {
     utils::set_panic_hook();
 
     let payload = ApiPayload {
         slack_code,
         github_code,
     };
-
-    console::log_1(&"Sending request to API".into());
 
     let client = Client::new();
     let request = client
@@ -54,9 +52,10 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
     match request {
         Ok(req) => {
             console::log_1(&"Request built successfully".into());
+
             let response = client.execute(req);
 
-            future_to_promise(async move {
+            
                 match response.await {
                     Ok(response) => {
                         console::log_1(&"Received response from API".into());
@@ -92,14 +91,11 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
                         let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
                         Err(JsValue::from_str(&format!("Request error: {}\nError: {}", payload_json, err.to_string())))
                     },
-                }
-            })
+            }
         },
         Err(err) => {
             console::error_2(&"Failed to build request:".into(), &err.to_string().into());
-            future_to_promise(async move {
-                Err(JsValue::from_str(&format!("Failed to build request: {}", err.to_string())))
-            })
+            Err(JsValue::from_str(&format!("Failed to build request: {}", err.to_string())))
         }
     }
 }
