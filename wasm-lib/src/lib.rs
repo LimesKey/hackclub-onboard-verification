@@ -46,7 +46,7 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
     console::log_1(&"Sending request to API".into());
 
     let client = Client::new();
-    let request = client.get("https://api.onboard.limeskey.com/api")
+    let request = client.get("https://api.onboard.hackclub.com/api")
         .json(&payload)
         .send();
 
