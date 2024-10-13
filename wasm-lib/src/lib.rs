@@ -6,6 +6,7 @@ use reqwest::Client;
 use wasm_bindgen_futures::future_to_promise;
 use js_sys::Promise;
 use url::Url;
+use web_sys::console;
 
 #[derive(Serialize, Deserialize)]
 struct ApiPayload {
@@ -42,6 +43,8 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
         github_code,
     };
 
+    console::log_1(&"Sending request to API".into());
+
     let client = Client::new();
     let request = client.get("https://api.onboard.limeskey.com/api")
         .json(&payload)
@@ -50,9 +53,14 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
     future_to_promise(async move {
         match request.await {
             Ok(response) => {
+                console::log_1(&"Received response from API".into());
+
                 let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
                 let status = response.status();
                 let response_text = response.text().await.unwrap_or_else(|_| "Failed to read response".to_string());
+
+                console::log_2(&"Response status:".into(), &status.as_u16().into());
+                console::log_2(&"Response text:".into(), &response_text.clone().into());
 
                 if status.is_success() {
                     let api_response: ApiResponse = serde_json::from_str(&response_text).unwrap();
@@ -66,12 +74,15 @@ pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Pr
                         .append_pair("slack_user", &api_response.Slack.username)
                         .append_pair("github_id", &api_response.GitHub.id);
 
+                    console::log_1(&"Successfully generated URL".into());
                     Ok(JsValue::from_str(&url.to_string()))
                 } else {
+                    console::error_2(&"Request failed:".into(), &response_text.clone().into());
                     Err(JsValue::from_str(&format!("Request failed: {}\nResponse: {}", payload_json, response_text)))
                 }
             },
-            Err(_) => {
+            Err(err) => {
+                console::error_1(&"Request error".into());
                 let payload_json = serde_json::to_string(&payload).unwrap_or_else(|_| "{}".to_string());
                 Err(JsValue::from_str(&format!("Request error: {}", payload_json)))
             },

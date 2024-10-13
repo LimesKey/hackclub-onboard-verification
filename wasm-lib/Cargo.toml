@@ -25,6 +25,7 @@ wasm-bindgen-futures = "0.4.45"
 js-sys = "0.3.72"
 serde_json = "1.0.128"
 url = "2.5.2"
+web-sys = { version = "0.3.72", features = ["console"] }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"

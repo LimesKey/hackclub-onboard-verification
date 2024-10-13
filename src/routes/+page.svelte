@@ -33,7 +33,6 @@
                 localStorage.removeItem('slackCode');
                 localStorage.removeItem('githubCode');
 
-                // Redirect to the generated URL
                 window.location.href = result;
             } catch (error) {
                 errorMessage = 'Verification failed: ' + (error as Error).message;
