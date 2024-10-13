@@ -35,6 +35,8 @@ struct ApiResponse {
 
 #[wasm_bindgen]
 pub fn verify_api(slack_code: Option<String>, github_code: Option<String>) -> Promise {
+    utils::set_panic_hook();
+
     let payload = ApiPayload {
         slack_code,
         github_code,
