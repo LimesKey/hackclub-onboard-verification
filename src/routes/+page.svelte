@@ -55,7 +55,7 @@
                     on:click={() => {
                         if (!SlackCode) {
                             window.location.href =
-                                'https://slack.com/oauth/v2/authorize?client_id=2210535565.6498112565286&scope=&user_scope=openid,email,profile&redirect_uri=http://verify.onboard.hackclub.com/oauth/slack';
+                                'https://slack.com/oauth/v2/authorize?client_id=2210535565.6498112565286&scope=&user_scope=openid,email,profile&redirect_uri=https://verify.onboard.hackclub.com/oauth/slack';
                         }
                     }}
                     disabled={!!SlackCode}
