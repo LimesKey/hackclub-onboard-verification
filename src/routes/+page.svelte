@@ -35,8 +35,12 @@
 
                 window.location.href = result;
             } catch (error) {
-                errorMessage = 'Verification failed: ' + (error as Error).message;
-                console.error(errorMessage);
+                if (error instanceof Error) {
+                    errorMessage = 'Verification failed: ' + error.message;
+                } else {
+                    errorMessage = 'Verification failed: An unknown error occurred';
+                }
+                console.error('Verification failed:', error);
             } finally {
                 isLoading = false;
             }
