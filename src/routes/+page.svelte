@@ -41,6 +41,8 @@
                     errorMessage = 'Verification failed: An unknown error occurred';
                 }
                 console.error('Verification failed:', error);
+                localStorage.removeItem('slackCode');
+                localStorage.removeItem('githubCode');
             } finally {
                 isLoading = false;
             }
@@ -51,7 +53,7 @@
 <div class="min-h-screen flex flex-col bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
     <div class="flex-grow flex items-center justify-center">
         <div class="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
-            <h1 class="text-2xl font-bold text-center mb-4">OAuth Verification</h1>
+            <h1 class="text-2xl font-bold text-center mb-4">OnBoard OAuth Verification</h1>
             <div class="flex justify-center gap-4 mb-4">
                 <button
                     class={SlackCode ? "btn-success" : "btn-primary"}
@@ -106,6 +108,6 @@
         </div>
     </div>
     <footer class="text-center text-white py-4">
-        <p>&copy; Made by Ryan Di Lorenzo with "jank" and "lock in".</p>
+        <p>&copy; Made by Ryan Di Lorenzo.</p>
     </footer>
 </div>

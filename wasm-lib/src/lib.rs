@@ -16,7 +16,6 @@ struct ApiPayload {
 
 #[derive(Serialize, Deserialize)]
 struct SlackResponse {
-    hashed_secret: String,
     slack_id: String,
     eligibility: String,
     username: String,
@@ -32,6 +31,7 @@ struct GitHubResponse {
 struct ApiResponse {
     slack: SlackResponse,
     github: GitHubResponse,
+    hashed_secret: String,
 }
 
 #[wasm_bindgen()]
@@ -77,7 +77,7 @@ pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>)
         // Generate the URL with appended parameters
         let mut url = Url::parse("https://forms.hackclub.com/t/9yNy4WYtrZus").unwrap();
         url.query_pairs_mut()
-            .append_pair("secret", &api_response.slack.hashed_secret)
+            .append_pair("secret", &api_response.hashed_secret)
             .append_pair("slack_id", &api_response.slack.slack_id)
             .append_pair("eligibility", &api_response.slack.eligibility)
             .append_pair("slack_user", &api_response.slack.username)
