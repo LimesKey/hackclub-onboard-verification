@@ -30,8 +30,8 @@ struct GitHubResponse {
 
 #[derive(Deserialize)]
 struct ApiResponse {
-    Slack: SlackResponse,
-    GitHub: GitHubResponse,
+    slack: SlackResponse,
+    github: GitHubResponse,
 }
 
 #[wasm_bindgen()]
@@ -77,11 +77,11 @@ pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>)
         // Generate the URL with appended parameters
         let mut url = Url::parse("https://forms.hackclub.com/t/9yNy4WYtrZus").unwrap();
         url.query_pairs_mut()
-            .append_pair("secret", &api_response.Slack.hashed_secret)
-            .append_pair("slack_id", &api_response.Slack.slack_id)
-            .append_pair("eligibility", &api_response.Slack.eligibility)
-            .append_pair("slack_user", &api_response.Slack.username)
-            .append_pair("github_id", &api_response.GitHub.id);
+            .append_pair("secret", &api_response.slack.hashed_secret)
+            .append_pair("slack_id", &api_response.slack.slack_id)
+            .append_pair("eligibility", &api_response.slack.eligibility)
+            .append_pair("slack_user", &api_response.slack.username)
+            .append_pair("github_id", &api_response.github.id);
 
         console::log_1(&"Successfully generated URL".into());
         Ok(JsValue::from_str(&url.to_string()))
