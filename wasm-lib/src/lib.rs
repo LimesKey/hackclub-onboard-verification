@@ -44,6 +44,8 @@ pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>)
         github_code,
     };
 
+    console::log_1(&"Payload created".into());
+
     let payload_json = serde_json::to_string(&payload).unwrap();
 
     // Initialize the POST request
