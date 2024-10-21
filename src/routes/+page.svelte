@@ -60,7 +60,7 @@
                     on:click={() => {
                         if (!SlackCode) {
                             window.location.href =
-                                'https://slack.com/oauth/v2/authorize?client_id=2210535565.6498112565286&scope=&user_scope=openid,email,profile&redirect_uri=https://verify.onboard.hackclub.com/oauth/slack';
+                                'https://slack.com/oauth/v2/authorize?client_id=2210535565.6498112565286&scope=&user_scope=openid,email,profile&redirect_uri=https://verify.onboard.hackclub.com/auth/callback/slack';
                         }
                     }}
                     disabled={!!SlackCode}
@@ -74,7 +74,7 @@
                     on:click={() => {
                         if (!GitHubCode) {
                             window.location.href =
-                                'https://github.com/login/oauth/authorize?client_id=Ov23li7FU4IQ7x89NQMn';
+                                'https://github.com/login/oauth/authorize?client_id=Ov23li7FU4IQ7x89NQMn&redirect_uri=https://verify.onboard.hackclub.com/auth/callback/github';
                         }
                     }}
                     disabled={!!GitHubCode}
