@@ -15,10 +15,12 @@ struct ApiPayload {
 }
 
 #[derive(Serialize, Deserialize)]
-struct SlackResponse {
-    slack_id: String,
-    eligibility: String,
-    username: String,
+pub struct SlackResponse {
+    pub slack_id: String,
+    pub eligibility: String,
+    pub first_name: String,
+    pub last_name: Option<String>,
+    pub username: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -43,9 +45,7 @@ pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>)
         slack_code,
         github_code,
     };
-
-    console::log_1(&"Payload created".into());
-
+    
     let payload_json = serde_json::to_string(&payload).unwrap();
 
     // Initialize the POST request
@@ -58,7 +58,7 @@ pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>)
     opts.set_headers(&headers);
 
     // Create the request object with the API URL
-    let request = Request::new_with_str_and_init("https://api.onboard.limeskey.com/api", &opts)
+    let request = Request::new_with_str_and_init("https://api.onboard.limeskey.com", &opts)
         .map_err(|e| JsValue::from(Error::new(&format!("Request creation failed: {:?}", e))))?;
 
     // Fetch the request
@@ -83,7 +83,9 @@ pub async fn verify_api(slack_code: Option<String>, github_code: Option<String>)
             .append_pair("slack_id", &api_response.slack.slack_id)
             .append_pair("eligibility", &api_response.slack.eligibility)
             .append_pair("slack_user", &api_response.slack.username)
-            .append_pair("github_id", &api_response.github.id);
+            .append_pair("github_id", &api_response.github.id)
+            .append_pair("slack_first_name", &api_response.slack.first_name)
+            .append_pair("slack_last_name", &api_response.slack.last_name.unwrap_or("".to_string()));
 
         console::log_1(&"Successfully generated URL".into());
         Ok(JsValue::from_str(&url.to_string()))
