@@ -108,6 +108,6 @@
         </div>
     </div>
     <footer class="text-center text-white py-4">
-        <p>&copy; Made by Ryan Di Lorenzo.</p>
+        <p>Made by LimesKey</p>
     </footer>
 </div>
